@@ -210,14 +210,29 @@ function love.update(dt)
     else
         player1.dy = 0
     end
+    -- if ball.dx >= 0 then
+    --     player1.dy = 0
+    -- else
+    --     t = (ball.x - 10) / (-ball.dx)
+    --     y = t * ball.dy + ball.y
+    --     player1.dy = (y - player1.y - 10) / t
+    -- end
 
-    -- player 2 movement
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
-    else
+    -- -- player 2 movement
+    -- if love.keyboard.isDown('up') then
+    --     player2.dy = -PADDLE_SPEED
+    -- elseif love.keyboard.isDown('down') then
+    --     player2.dy = PADDLE_SPEED
+    -- else
+    --     player2.dy = 0
+    -- end
+
+    if ball.dx <= 0 or gameState ~= 'play' then
         player2.dy = 0
+    else
+        t = (VIRTUAL_WIDTH - 15 - ball.x) / ball.dx
+        y = t * ball.dy + ball.y
+        player2.dy = (y - player2.y - 10) / t
     end
 
     -- update our ball based on its DX and DY only if we're in play state;
