@@ -8,9 +8,8 @@ local WALKING_SPEED = 140
 local JUMP_VELOCITY = 400
 
 function Player:init(map)
-    self.coins = 0
-    self.x = 0
-    self.y = 0
+    self.coins = 0 -- how many coins eaten
+    self.kills = 0 -- how many heads killed
     self.width = 16
     self.height = 20
 
@@ -26,7 +25,9 @@ function Player:init(map)
     self.sounds = {
         ['jump'] = love.audio.newSource('sounds/jump.wav', 'static'),
         ['hit'] = love.audio.newSource('sounds/hit.wav', 'static'),
-        ['coin'] = love.audio.newSource('sounds/coin.wav', 'static')
+        ['coin'] = love.audio.newSource('sounds/coin.wav', 'static'),
+        ['empty-block'] = love.audio.newSource('sounds/empty-block.wav', 'static'),
+        ['death'] = love.audio.newSource('sounds/death.wav', 'static')
     }
 
     -- animation frames
@@ -186,10 +187,26 @@ function Player:update(dt)
         -- apply velocity
         self.y = self.y + self.dy * dt
 
-        if self.y >= VIRTUAL_HEIGHT then
+        if self.y >= VIRTUAL_HEIGHT or self:hitHead() then
             gameState = 'lose'
+            self.sounds['death']:play()
         end
     end
+end
+
+function Player:hitHead()
+    if self.x <= self.map.head.x + self.map.head.width and
+        self.x + self.width >= self.map.head.x and
+        self.y <= self.map.head.y + self.map.head.height and
+        self.y + self.height >= self.map.head.y then
+        return true -- AABB
+    end
+        
+    return false
+end
+
+function Player:killHead()
+    -- jump onto the head to kill head
 end
 
 -- jumping and block hitting logic
@@ -226,7 +243,7 @@ function Player:calculateJumps()
             if playCoin then
                 self.sounds['coin']:play()
             elseif playHit then
-                self.sounds['hit']:play()
+                self.sounds['empty-block']:play()
             end
         end
     end
@@ -238,7 +255,7 @@ function Player:checkLeftCollision()
         -- check if there's a tile directly beneath us
         if self.map:collides(self.map:tileAt(self.x - 1, self.y)) or
             self.map:collides(self.map:tileAt(self.x - 1, self.y + self.height - 1)) then
-            
+            self.sounds['hit']:play()
             -- if so, reset velocity and position and change state
             self.dx = 0
             self.x = self.map:tileAt(self.x - 1, self.y).x * self.map.tileWidth
@@ -252,7 +269,7 @@ function Player:checkRightCollision()
         -- check if there's a tile directly beneath us
         if self.map:collides(self.map:tileAt(self.x + self.width, self.y)) or
             self.map:collides(self.map:tileAt(self.x + self.width, self.y + self.height - 1)) then
-            
+            self.sounds['hit']:play()
             -- if so, reset velocity and position and change state
             self.dx = 0
             self.x = (self.map:tileAt(self.x + self.width, self.y).x - 1) * self.map.tileWidth - self.width

@@ -12,6 +12,7 @@ push = require 'push'
 require 'Animation'
 require 'Map'
 require 'Player'
+require 'Head'
 
 -- close resolution to NES but 16:9
 VIRTUAL_WIDTH = 432
@@ -119,8 +120,10 @@ function love.draw()
         map:render()
     elseif gameState == 'lose' then
         love.graphics.printf('Game Over!', map.camX, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to Restart', map.camX, 40, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'win' then
         love.graphics.printf('Victory!', map.camX, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to Restart', map.camX, 40, VIRTUAL_WIDTH, 'center')
     end
 
     -- end virtual resolution

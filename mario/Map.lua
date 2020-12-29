@@ -47,6 +47,7 @@ function Map:init()
 
     -- associate player with map
     self.player = Player(self)
+    self.head = Head(self)
 
     -- camera offsets
     self.camX = 0
@@ -136,6 +137,7 @@ function Map:init()
 
     -- start the background music
     self.music:setLooping(true)
+    self.music:setVolume(0.25)
     self.music:play()
 end
 
@@ -161,6 +163,7 @@ end
 function Map:update(dt)
     if gameState == 'play' then
         self.player:update(dt)
+        self.head:update(dt)
         
         -- keep camera's X coordinate following the player, preventing camera from
         -- scrolling past 0 to the left and the map's width
@@ -201,4 +204,5 @@ function Map:render()
     end
 
     self.player:render()
+    self.head:render()
 end
