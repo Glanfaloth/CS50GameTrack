@@ -136,7 +136,7 @@ function Map:init()
                 x = x + 1
 
             -- 10% chance to not generate anything, creating a gap
-            elseif math.random(10) ~= 1 then
+            elseif math.random(10) ~= 1 and x ~= self.mapWidth - 4 then
                 
                 -- creates column of tiles going to bottom of map
                 for y = self.mapHeight / 2, self.mapHeight do
