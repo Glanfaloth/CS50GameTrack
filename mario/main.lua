@@ -135,12 +135,12 @@ function love.draw()
         love.graphics.setFont(titleFont)
         love.graphics.printf('Game Over!', map.camX, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.setFont(smallFont)
-        love.graphics.printf('Press Enter to Restart', map.camX, 40, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to Restart', map.camX, 50, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'win' then
         love.graphics.setFont(titleFont)
         love.graphics.printf('Victory!', map.camX, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.setFont(smallFont)
-        love.graphics.printf('Press Enter to Restart', map.camX, 40, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to Restart', map.camX, 50, VIRTUAL_WIDTH, 'center')
     end
 
     -- end virtual resolution

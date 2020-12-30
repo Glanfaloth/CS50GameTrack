@@ -4,6 +4,8 @@ function Flag:init(map)
     self.map = map
     self.x = self.map.mapWidth * self.map.tileWidth - 72
     self.y = self.map.mapHeight * self.map.tileHeight / 2 - 160
+    self.width = 16
+    self.height = 16
     self.texture = love.graphics.newImage('graphics/spritesheet.png')
     self.sprites = generateQuads(self.texture, 16, 16)
     self.frames = {}

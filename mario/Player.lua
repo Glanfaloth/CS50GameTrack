@@ -28,6 +28,7 @@ function Player:init(map)
         ['coin'] = love.audio.newSource('sounds/coin.wav', 'static'),
         ['empty-block'] = love.audio.newSource('sounds/empty-block.wav', 'static'),
         ['kill'] = love.audio.newSource('sounds/kill.wav', 'static'),
+        ['powerup-reveal'] = love.audio.newSource('sounds/powerup-reveal.wav', 'static'),
         ['death'] = love.audio.newSource('sounds/death.wav', 'static')
     }
 
@@ -198,17 +199,12 @@ function Player:update(dt)
             gameState = 'lose'
             self.sounds['death']:play()
         end
-    end
-end
 
-function Player:hitHead()
-    if self.x <= self.map.head.x + self.map.head.width and
-        self.x + self.width >= self.map.head.x and
-        self.y >= self.map.head.y then
-        return true -- AABB
+        if self:hitFlag() then
+            gameState = 'win'
+            self.sounds['powerup-reveal']:play()
+        end
     end
-        
-    return false
 end
 
 function Player:killHead()
@@ -221,6 +217,27 @@ function Player:killHead()
         return true
     end
 
+    return false
+end
+
+function Player:hitHead()
+    if self.x <= self.map.head.x + self.map.head.width and
+        self.x + self.width >= self.map.head.x and
+        self.y >= self.map.head.y then
+        return true -- AABB
+    end
+        
+    return false
+end
+
+function Player:hitFlag()
+    if self.x <= self.map.flag.x + self.map.flag.width and
+        self.x + self.width >= self.map.flag.x and
+        self.y <= self.map.flag.y + self.map.flag.height and
+        self.y + self.height >= self.map.flag.y then
+        return true -- AABB
+    end
+        
     return false
 end
 
