@@ -188,7 +188,11 @@ function Player:update(dt)
         -- apply velocity
         self.y = self.y + self.dy * dt
 
-        self:killHead()
+        if self:killHead() then
+            self.kills = self.kills + 1
+            self.dy = -self.dy
+            self.sounds['kill']:play()
+        end
             
         if self.y >= VIRTUAL_HEIGHT or self:hitHead() then
             gameState = 'lose'
@@ -212,11 +216,12 @@ function Player:killHead()
     if self.y + self.height >= self.map.head.y and
         self.y + self.height <= self.map.head.y + 10 and
         self.x + self.width > self.map.head.x and
-        self.x < self.map.head.x + self.map.head.width then
-        self.kills = self.kills + 1
-        self.dy = -self.dy
-        self.sounds['kill']:play()
+        self.x < self.map.head.x + self.map.head.width and
+        self.dy > 0 then
+        return true
     end
+
+    return false
 end
 
 -- jumping and block hitting logic

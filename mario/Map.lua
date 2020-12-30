@@ -26,6 +26,14 @@ MUSHROOM_BOTTOM = 11
 JUMP_BLOCK = 5
 JUMP_BLOCK_HIT = 9
 
+FLAGPOLE_UP = 8
+FLAGPOLE_MIDDLE = 12
+FLAGPOLE_DOWN = 16
+
+FLAG_1 = 13
+FLAG_2 = 14
+FLAG_3 = 15
+
 -- a speed to multiply delta time to scroll map; smooth value
 local SCROLL_SPEED = 62
 
@@ -38,7 +46,7 @@ function Map:init()
 
     self.tileWidth = 16
     self.tileHeight = 16
-    self.mapWidth = 30
+    self.mapWidth = 60
     self.mapHeight = 28
     self.tiles = {}
 
@@ -48,6 +56,7 @@ function Map:init()
     -- associate player with map
     self.player = Player(self)
     self.head = Head(self)
+    self.flag = Flag(self)
 
     -- camera offsets
     self.camX = 0
@@ -68,7 +77,7 @@ function Map:init()
 
     -- begin generating the terrain using vertical scan lines
     local x = 1
-    while x < self.mapWidth do
+    while x < self.mapWidth - 30 do
         
         -- 2% chance to generate a cloud
         -- make sure we're 2 tiles from edge at least
@@ -134,6 +143,24 @@ function Map:init()
             x = x + 2
         end
     end
+    while x <= self.mapWidth do
+        if x == self.mapWidth - 4 then
+            for y = self.mapHeight / 2, self.mapHeight do
+                self:setTile(x, y, TILE_BRICK)
+            end
+            self:setTile(x, self.mapHeight / 2 - 1, FLAGPOLE_DOWN)
+            for y = self.mapHeight / 2 - 8, self.mapHeight / 2 - 2 do
+                self:setTile(x, y, FLAGPOLE_MIDDLE)
+            end
+            self:setTile(x, self.mapHeight / 2 - 9, FLAGPOLE_UP)
+        else
+            for y = self.mapHeight / 2, self.mapHeight do
+                self:setTile(x, y, TILE_BRICK)
+            end
+        end
+
+        x = x + 1
+    end
 
     -- start the background music
     self.music:setLooping(true)
@@ -146,7 +173,9 @@ function Map:collides(tile)
     -- define our collidable tiles
     local collidables = {
         TILE_BRICK, JUMP_BLOCK, JUMP_BLOCK_HIT,
-        MUSHROOM_TOP, MUSHROOM_BOTTOM
+        MUSHROOM_TOP, MUSHROOM_BOTTOM,
+        FLAGPOLE_UP, FLAGPOLE_MIDDLE, FLAGPOLE_DOWN,
+        FLAG_1, FLAG_2, FLAG_3
     }
 
     -- iterate and return true if our tile type matches
@@ -164,6 +193,7 @@ function Map:update(dt)
     if gameState == 'play' then
         self.player:update(dt)
         self.head:update(dt)
+        self.flag:update(dt)
         
         -- keep camera's X coordinate following the player, preventing camera from
         -- scrolling past 0 to the left and the map's width
@@ -205,4 +235,5 @@ function Map:render()
 
     self.player:render()
     self.head:render()
+    self.flag:render()
 end

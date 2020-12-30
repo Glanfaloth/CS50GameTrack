@@ -13,6 +13,7 @@ require 'Animation'
 require 'Map'
 require 'Player'
 require 'Head'
+require 'Flag'
 
 -- close resolution to NES but 16:9
 VIRTUAL_WIDTH = 432
@@ -35,7 +36,8 @@ map = Map()
 function love.load()
 
     -- sets up a different, better-looking retro font as our default
-    love.graphics.setFont(love.graphics.newFont('fonts/font.ttf', 32))
+    titleFont = love.graphics.newFont('fonts/font.ttf', 32)
+    smallFont = love.graphics.newFont('fonts/font.ttf', 16)
 
     -- sets up virtual screen resolution for an authentic retro feel
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -48,7 +50,7 @@ function love.load()
     love.keyboard.keysPressed = {}
     love.keyboard.keysReleased = {}
 
-    gameState = 'play'
+    gameState = 'start'
 end
 
 -- called whenever window is resized
@@ -79,7 +81,9 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     elseif key == 'enter' or key == 'return' then
-        if gameState == 'lose' or gameState == 'win' then
+        if gameState == 'start' then
+            gameState = 'play'
+        elseif gameState == 'lose' or gameState == 'win' then
             -- stop bgm and reload map
             map.music:stop()
             map = Map()
@@ -116,13 +120,26 @@ function love.draw()
     -- renders our map object onto the screen
     love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
 
-    if gameState == 'play' then
+    if gameState == 'start' then
+        love.graphics.setFont(titleFont)
+        love.graphics.printf('Welcome to Fake Mario!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Press LEFT <- and RIGHT -> to move', map.camX, 50, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press SPACE to jump', map.camX, 70, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf("Touching the Head dies, jumping onto it kills", map.camX, 90, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Reach the flag to win', map.camX, 110, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press ENTER to start', map.camX, 150, VIRTUAL_WIDTH, 'center')
+    elseif gameState == 'play' then
         map:render()
     elseif gameState == 'lose' then
+        love.graphics.setFont(titleFont)
         love.graphics.printf('Game Over!', map.camX, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
         love.graphics.printf('Press Enter to Restart', map.camX, 40, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'win' then
+        love.graphics.setFont(titleFont)
         love.graphics.printf('Victory!', map.camX, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
         love.graphics.printf('Press Enter to Restart', map.camX, 40, VIRTUAL_WIDTH, 'center')
     end
 
