@@ -27,6 +27,7 @@ function Player:init(map)
         ['hit'] = love.audio.newSource('sounds/hit.wav', 'static'),
         ['coin'] = love.audio.newSource('sounds/coin.wav', 'static'),
         ['empty-block'] = love.audio.newSource('sounds/empty-block.wav', 'static'),
+        ['kill'] = love.audio.newSource('sounds/kill.wav', 'static'),
         ['death'] = love.audio.newSource('sounds/death.wav', 'static')
     }
 
@@ -187,6 +188,8 @@ function Player:update(dt)
         -- apply velocity
         self.y = self.y + self.dy * dt
 
+        self:killHead()
+            
         if self.y >= VIRTUAL_HEIGHT or self:hitHead() then
             gameState = 'lose'
             self.sounds['death']:play()
@@ -197,8 +200,7 @@ end
 function Player:hitHead()
     if self.x <= self.map.head.x + self.map.head.width and
         self.x + self.width >= self.map.head.x and
-        self.y <= self.map.head.y + self.map.head.height and
-        self.y + self.height >= self.map.head.y then
+        self.y >= self.map.head.y then
         return true -- AABB
     end
         
@@ -207,6 +209,14 @@ end
 
 function Player:killHead()
     -- jump onto the head to kill head
+    if self.y + self.height >= self.map.head.y and
+        self.y + self.height <= self.map.head.y + 10 and
+        self.x + self.width > self.map.head.x and
+        self.x < self.map.head.x + self.map.head.width then
+        self.kills = self.kills + 1
+        self.dy = -self.dy
+        self.sounds['kill']:play()
+    end
 end
 
 -- jumping and block hitting logic
@@ -292,5 +302,6 @@ function Player:render()
     love.graphics.draw(self.texture, self.currentFrame, math.floor(self.x + self.xOffset),
         math.floor(self.y + self.yOffset), 0, scaleX, 1, self.xOffset, self.yOffset)
     
-    love.graphics.printf('Coins: ' .. tostring(self.coins), self.map.camX, 10, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf('Coins: ' .. tostring(self.coins) .. ', Kills: ' .. tostring(self.kills),
+        self.map.camX, 10, VIRTUAL_WIDTH, 'center')
 end

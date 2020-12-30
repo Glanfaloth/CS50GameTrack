@@ -16,11 +16,13 @@ end
 
 function Head:update(dt)
     if gameState == 'play' then
-        self.x = self.x + self.dx * dt
+        self.x = (self.x + self.dx * dt) % self.map.mapWidthPixels -- one after another
     end
 end
 
 function Head:render()
-    love.graphics.draw(self.texture, self.frames[1], math.floor(self.x + self.width / 2),
-        math.floor(self.y + self.height / 2), 0, -0.6, 0.6, self.width / 2, self.height / 2)
+    if self.x < self.map.mapWidthPixels then
+        love.graphics.draw(self.texture, self.frames[1], math.floor(self.x + self.width / 2),
+            math.floor(self.y + self.height / 2), 0, -0.6, 0.6, self.width / 2, self.height / 2)
+    end
 end
